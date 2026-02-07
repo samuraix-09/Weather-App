@@ -1,0 +1,138 @@
+﻿.offline-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.offline-container {
+  width: 100%;
+  max-width: 620px;
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--line);
+  text-align: center;
+}
+
+.offline-title {
+  font-family: var(--font-display);
+  font-size: 30px;
+  color: var(--danger);
+  margin-bottom: 12px;
+}
+
+.offline-message p {
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.connection-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.detail-item {
+  background: var(--surface-2);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  border: 1px solid var(--line);
+}
+
+.detail-item .label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.detail-item .value {
+  font-weight: 600;
+}
+
+.detail-item .value.offline {
+  color: var(--danger);
+}
+
+.offline-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.retry-button,
+.home-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.retry-button {
+  background: var(--accent-3);
+  color: #fff;
+  border-color: transparent;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.offline-tips {
+  text-align: left;
+  padding: 16px;
+  background: var(--surface-2);
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+}
+
+.signal-status {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  align-items: flex-end;
+}
+
+.signal-bar {
+  width: 6px;
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.signal-bar.active {
+  background: var(--success);
+}
+
+.signal-bar:nth-child(1) {
+  height: 8px;
+}
+.signal-bar:nth-child(2) {
+  height: 12px;
+}
+.signal-bar:nth-child(3) {
+  height: 16px;
+}
+.signal-bar:nth-child(4) {
+  height: 20px;
+}
+
+@media (max-width: 600px) {
+  .offline-container {
+    padding: 20px;
+  }
+}
