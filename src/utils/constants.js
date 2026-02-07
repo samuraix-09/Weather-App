@@ -1,14 +1,5 @@
 // Shaharlar ro'yxati
-export const CITIES = [
-  { name: 'Toshkent', lat: 41.2646, lon: 69.2163 },
-  { name: 'Samarqand', lat: 39.627, lon: 66.975 },
-  { name: 'Buxoro', lat: 39.768, lon: 64.4556 },
-  { name: 'Andijon', lat: 40.7833, lon: 72.3333 },
-  { name: "Farg'ona", lat: 40.3864, lon: 71.7864 },
-  { name: 'Namangan', lat: 40.9983, lon: 71.6726 },
-  { name: 'Qarshi', lat: 38.8616, lon: 65.7846 },
-  { name: 'Nukus', lat: 42.4531, lon: 59.6103 },
-];
+export const CITIES = [];
 
 // Ob-havo kodlari
 export const WEATHER_CODES = {
@@ -44,4 +35,4 @@ export const COLORS = {
 };
 
 // Default shahar
-export const DEFAULT_CITY = CITIES[0];
+export const DEFAULT_CITY = null;

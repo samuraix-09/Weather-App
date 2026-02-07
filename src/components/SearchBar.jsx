@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import '../styles/SearchBar.css';
+import { geocodeCities } from '../services/locationService';
 
 const SearchBar = ({ onSearch, cities }) => {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef(null);
+  const requestIdRef = useRef(0);
 
   useEffect(() => {
     const handleClickOutside = event => {
@@ -21,38 +24,82 @@ const SearchBar = ({ onSearch, cities }) => {
     };
   }, []);
 
+  useEffect(() => {
+    const value = query.trim();
+    if (!value) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      const requestId = ++requestIdRef.current;
+      setIsSearching(true);
+      try {
+        const remote = await geocodeCities(value, 6);
+        if (requestIdRef.current === requestId) {
+          setSuggestions(remote);
+          setShowSuggestions(true);
+        }
+      } catch (error) {
+        console.error('Geocode error:', error);
+      } finally {
+        if (requestIdRef.current === requestId) {
+          setIsSearching(false);
+        }
+      }
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [query, cities]);
+
   const handleInputChange = e => {
     const value = e.target.value;
     setQuery(value);
 
-    if (value.trim().length > 0) {
-      const filtered = cities.filter(city =>
-        city.name.toLowerCase().includes(value.toLowerCase())
-      );
-      setSuggestions(filtered);
-      setShowSuggestions(true);
-    } else {
-      setSuggestions(cities);
-      setShowSuggestions(true);
+    if (!value.trim()) {
+      setSuggestions([]);
+      setShowSuggestions(false);
     }
   };
 
   const handleSelectCity = city => {
-    setQuery(city.name);
-    setShowSuggestions(false);
     onSearch(city);
+    setQuery('');
+    setSuggestions([]);
+    setShowSuggestions(false);
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    if (query.trim()) {
-      const city = cities.find(c =>
-        c.name.toLowerCase().includes(query.toLowerCase())
-      );
-      if (city) {
-        onSearch(city);
+    const value = query.trim();
+    if (!value) return;
+
+    const exactCity = suggestions.find(
+      c => c.name.toLowerCase() === value.toLowerCase()
+    );
+
+    if (exactCity) {
+      onSearch(exactCity);
+      setQuery('');
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const remote = await geocodeCities(value, 1);
+      if (remote[0]) {
+        onSearch(remote[0]);
+        setQuery('');
+        setSuggestions([]);
         setShowSuggestions(false);
       }
+    } catch (error) {
+      console.error('Geocode error:', error);
+    } finally {
+      setIsSearching(false);
     }
   };
 
@@ -102,21 +149,23 @@ const SearchBar = ({ onSearch, cities }) => {
                     if (e.key === 'Enter') handleSelectCity(city);
                   }}
                 >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  <span>{city.name}</span>
+                  <span className="suggestion-icon">?</span>
+                  <span className="suggestion-text">
+                    <span className="suggestion-name">{city.name}</span>
+                    {(city.region || city.country || city.displayName) && (
+                      <span className="suggestion-meta">
+                        {city.region || city.country || city.displayName}
+                      </span>
+                    )}
+                  </span>
                 </button>
               ))}
+            </div>
+          )}
+
+          {showSuggestions && suggestions.length === 0 && !isSearching && (
+            <div className="suggestions-dropdown">
+              <div className="suggestion-item">Natija topilmadi</div>
             </div>
           )}
         </div>
